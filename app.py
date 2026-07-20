@@ -9,6 +9,8 @@ load_dotenv()
 
 WMATA_API_KEY = os.getenv("WMATA_API_KEY")
 
+print("WMATA key loaded:", bool(WMATA_API_KEY))
+
 app = Flask(__name__)
 
 app.secret_key = os.environ.get(
