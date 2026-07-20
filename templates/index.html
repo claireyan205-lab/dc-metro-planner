@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metro Train System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+
+<body>
+    <div id="accControls">
+        <span id="welcomeText"></span>
+
+        <a id="loginLink" href="/login-page">Log In</a>
+        <a id="signupLink" href="/signup-page">Sign Up</a>
+
+        <button id="logoutButton" type="button" style="display:none;">Log Out</button>
+    </div>
+
+    <nav>
+        <button id="arrivals">Train Arrivals</button>
+        <button id="path">Trip Planner</button>
+    </nav>
+
+    <div class=page-container>
+
+        <div class="map-wrap">
+
+            <div id="mapContainer">
+                <img src="{{ url_for('static', filename='metro-map.png') }}" alt="WMATA Metro Map" id="metroMap">
+
+                <!-- RED -->
+                <button class="map-station" data-codes="A15" data-name="Shady Grove" style="left: 135px; top: 46.5px;"></button>
+                <button class="map-station" data-codes="A14" data-name="Rockville" style="left: 148px; top: 59.5px;"></button>
+                <button class="map-station" data-codes="A13" data-name="Twinbrook" style="left: 162px; top: 73.5px;"></button>
+                <button class="map-station" data-codes="A12" data-name="North Bethesda" style="left: 176px; top: 87.5px;"></button>
+                <button class="map-station" data-codes="A11" data-name="Grosvenor-Strathmore" style="left: 190px; top: 101.5px;"></button>
+                <button class="map-station" data-codes="A10" data-name="Medical Center" style="left:204px; top:115.5px;"></button>
+                <button class="map-station" data-codes="A09" data-name="Bethesda" style="left:218px; top:129.5px;"></button>
+                <button class="map-station" data-codes="A08" data-name="Friendship Heights" style="left:230px; top:141.5px;"></button>
+                <button class="map-station" data-codes="A07" data-name="Tenleytown-AU" style="left:240px; top:148.5px;"></button>
+                <button class="map-station" data-codes="A06" data-name="Van Ness-UDC" style="left:252px; top:151.5px;"></button>
+                <button class="map-station" data-codes="A05" data-name="Cleveland Park" style="left:261px; top:158.5px;"></button>
+                <button class="map-station" data-codes="A04" data-name="Woodley Park-Zoo/Adams Morgan" style="left:270px; top:168.5px;"></button>
+                <button class="map-station" data-codes="A03" data-name="Dupont Circle" style="left:280px; top:178.5px;"></button>
+                <button class="map-station" data-codes="A02" data-name="Farragut North" style="left:288px; top:191.5px;"></button>
+                <button class="map-station" data-codes="A01,C01" data-name="Metro Center" style="left:314px; top:233.5px;"></button>
+                <button class="map-station" data-codes="B01,F01" data-name="Gallery Place" style="left:352px; top:233.5px;"></button>
+                <button class="map-station" data-codes="B02" data-name="Judiciary Square" style="left:375px; top:233.5px;"></button>
+                <button class="map-station" data-codes="B03" data-name="Union Station" style="left:402px; top:222.5px;"></button>
+                <button class="map-station" data-codes="B35" data-name="NoMa-Gallaudet U" style="left:401px; top:207.5px;"></button>
+                <button class="map-station" data-codes="B04" data-name="Rhode Island Ave" style="left:401px; top:190.5px;"></button>
+                <button class="map-station" data-codes="B05" data-name="Brookland-CUA" style="left:400px; top:174.5px;"></button>
+                <button class="map-station" data-codes="B06,E06" data-name="Fort Totten" style="left:369px; top:136.5px;"></button>
+                <button class="map-station" data-codes="B07" data-name="Takoma" style="left:334px; top:100.5px;"></button>
+                <button class="map-station" data-codes="B08" data-name="Silver Spring" style="left:327px; top:65.5px;"></button>
+                <button class="map-station" data-codes="B09" data-name="Forest Glen" style="left:328px; top:50.5px;"></button>
+                <button class="map-station" data-codes="B10" data-name="Wheaton" style="left:328px; top:34.5px;"></button>
+                <button class="map-station" data-codes="B11" data-name="Glenmont" style="left:328px; top:19.5px;"></button>
+
+                <!-- ORANGE -->
+                <button class="map-station" data-codes="K08" data-name="Vienna" style="left:77px; top:249px;"></button>
+                <button class="map-station" data-codes="K07" data-name="Dunn Loring-Merrifield" style="left:95px; top:249px;"></button>
+                <button class="map-station" data-codes="K06" data-name="West Falls Church" style="left:113px; top:249px;"></button>
+                <button class="map-station" data-codes="K05" data-name="East Falls Church" style="left:137px; top:253.5px;"></button>
+                <button class="map-station" data-codes="K04" data-name="Ballston-MU" style="left:154px; top:253.5px;"></button>
+                <button class="map-station" data-codes="K03" data-name="Virginia Square-GMU" style="left:167px; top:253.5px;"></button>
+                <button class="map-station" data-codes="K02" data-name="Clarendon" style="left:180px; top:254px;"></button>
+                <button class="map-station" data-codes="K01" data-name="Court House" style="left:193px; top:254px;"></button>
+                <button class="map-station" data-codes="C05" data-name="Rosslyn" style="left:213px; top:234.5px;"></button>
+                <button class="map-station" data-codes="C04" data-name="Foggy Bottom-GWU" style="left:260px; top:208.5px;"></button>
+                <button class="map-station" data-codes="C03" data-name="Farragut West" style="left:274px; top:208px;"></button>
+                <button class="map-station" data-codes="C02" data-name="McPherson Square" style="left:300px; top:208px;"></button>
+                <button class="map-station" data-codes="D01" data-name="Federal Triangle" style="left:314px; top:252px;"></button>
+                <button class="map-station" data-codes="D02" data-name="Smithsonian" style="left:314px; top:266px;"></button>
+                <button class="map-station" data-codes="D03,F03" data-name="L'Enfant Plaza" style="left:352px; top:282px;"></button>
+                <button class="map-station" data-codes="D04" data-name="Federal Center SW" style="left:373px; top:282px;"></button>
+                <button class="map-station" data-codes="D05" data-name="Capitol South" style="left:392px; top:282px;"></button>
+                <button class="map-station" data-codes="D06" data-name="Eastern Market" style="left:410px; top:279.5px;"></button>
+                <button class="map-station" data-codes="D07" data-name="Potomac Ave" style="left:420px; top:268.5px;"></button>
+                <button class="map-station" data-codes="D08" data-name="Stadium-Armory" style="left:441px; top:264.5px;"></button>
+                <button class="map-station" data-codes="D09" data-name="Minnesota Ave" style="left:474px; top:251.5px;"></button>
+                <button class="map-station" data-codes="D10" data-name="Deanwood" style="left:485px; top:240.5px;"></button>
+                <button class="map-station" data-codes="D11" data-name="Cheverly" style="left:497px; top:229.5px;"></button>
+                <button class="map-station" data-codes="D12" data-name="Landover" style="left:507px; top:217.5px;"></button>
+                <button class="map-station" data-codes="D13" data-name="New Carrollton" style="left:518px; top:206px;"></button>
+
+                <!-- GREEN -->
+                <button class="map-station" data-codes="E10" data-name="Greenbelt" style="left:422px; top:85.5px;"></button>
+                <button class="map-station" data-codes="E09" data-name="College Park-U of Md" style="left:411px; top:95.5px;"></button>
+                <button class="map-station" data-codes="E08" data-name="Hyattsville Crossing" style="left:400px; top:106.5px;"></button>
+                <button class="map-station" data-codes="E07" data-name="West Hyattsville" style="left:389px; top:118.5px;"></button>
+                <button class="map-station" data-codes="E05" data-name="Georgia Ave-Petworth" style="left:338px; top:147.5px;"></button>
+                <button class="map-station" data-codes="E04" data-name="Columbia Heights" style="left:324px; top:162.5px;"></button>
+                <button class="map-station" data-codes="E03" data-name="U Street" style="left:338px; top:178.5px;"></button>
+                <button class="map-station" data-codes="E02" data-name="Shaw-Howard U" style="left:352px; top:195.5px;"></button>
+                <button class="map-station" data-codes="E01" data-name="Mt Vernon Sq 7th St-Convention Center" style="left:352px; top:212.5px;"></button>
+                <button class="map-station" data-codes="F02" data-name="Archives" style="left:352px; top:253px;"></button>
+                <button class="map-station" data-codes="F04" data-name="Waterfront" style="left:372px; top:332.5px;"></button>
+                <button class="map-station" data-codes="F05" data-name="Navy Yard-Ballpark" style="left:387px; top:332.5px;"></button>
+                <button class="map-station" data-codes="F06" data-name="Anacostia" style="left:413px; top:342px;"></button>
+                <button class="map-station" data-codes="F07" data-name="Congress Heights" style="left:423px; top:351px;"></button>
+                <button class="map-station" data-codes="F08" data-name="Southern Avenue" style="left:436px; top:358.5px;"></button>
+                <button class="map-station" data-codes="F09" data-name="Naylor Road" style="left:455px; top:356.5px;"></button>
+                <button class="map-station" data-codes="F10" data-name="Suitland" style="left:466px; top:367px;"></button>
+                <button class="map-station" data-codes="F11" data-name="Branch Ave" style="left:477px; top:378.5px;"></button>
+
+                <!-- YELLOW -->
+                <button class="map-station" data-codes="C15" data-name="Huntington" style="left:306px; top:478.5px;"></button>
+                <button class="map-station" data-codes="C14" data-name="Eisenhower Avenue" style="left:306px; top:456.5px;"></button>
+                <button class="map-station" data-codes="C13" data-name="King St-Old Town" style="left:302px; top:435.5px;"></button>
+                <button class="map-station" data-codes="C12" data-name="Braddock Road" style="left:302px; top:420.5px;"></button>
+                <button class="map-station" data-codes="C10" data-name="National Airport" style="left:301px; top:398.5px;"></button>
+                <button class="map-station" data-codes="C09" data-name="Crystal City" style="left:282px; top:386.5px;"></button>
+                <button class="map-station" data-codes="C08" data-name="Pentagon City" style="left:271px; top:366.5px;"></button>
+                <button class="map-station" data-codes="C07" data-name="Pentagon" style="left:272px; top:341.5px;"></button>
+                
+                <!-- BLUE -->
+                <button class="map-station" data-codes="J03" data-name="Franconia-Springfield" style="left:200px; top:478.5px;"></button>
+                <button class="map-station" data-codes="J02" data-name="Van Dorn Street" style="left:228px; top:445.5px;"></button>
+                <button class="map-station" data-codes="G01" data-name="Benning Road" style="left:494px; top:268.5px;"></button>
+                <button class="map-station" data-codes="G02" data-name="Capitol Heights" style="left:507px; top:268.5px;"></button>
+                <button class="map-station" data-codes="G03" data-name="Addison Road-Seat Pleasant" style="left:521px; top:268.5px;"></button>
+                <button class="map-station" data-codes="G04" data-name="Morgan Boulevard" style="left:535px; top:268.5px;"></button>
+                <button class="map-station" data-codes="G05" data-name="Downtown Largo" style="left:548px; top:268.5px;"></button>
+                <button class="map-station" data-codes="C06" data-name="Arlington Cemetery" style="left:244px; top:303.5px;"></button>
+
+                <!-- SILVER -->
+                <button class="map-station" data-codes="N01" data-name="McLean" style="left:114px; top:239px;"></button>
+                <button class="map-station" data-codes="N02" data-name="Tysons" style="left:105px; top:230.5px;"></button>
+                <button class="map-station" data-codes="N03" data-name="Greensboro" style="left:96px; top:220.5px;"></button>
+                <button class="map-station" data-codes="N04" data-name="Spring Hill" style="left:87px; top:212.5px;"></button>
+                <button class="map-station" data-codes="N06" data-name="Wiehle-Reston East" style="left:77px; top:202.5px;"></button>
+                <button class="map-station" data-codes="N07" data-name="Reston Town Center" style="left:68px; top:193.5px;"></button>
+                <button class="map-station" data-codes="N08" data-name="Herndon" style="left:59px; top:184px;"></button>
+                <button class="map-station" data-codes="N09" data-name="Innovation Center" style="left:51px; top:176px;"></button>
+                <button class="map-station" data-codes="N10" data-name="Washington Dulles International Airport" style="left:40px; top:164.5px;"></button>
+                <button class="map-station" data-codes="N11" data-name="Loudoun Gateway" style="left:31px; top:156.5px;"></button>
+                <button class="map-station" data-codes="N12" data-name="Ashburn" style="left:23px; top:148.5px;"></button>
+            </div>
+        </div>
+
+        <div id="rightPanel"></div>
+            <section id="arrivalsSec">
+                <h2>Train Arrivals</h2>
+                <input list="stations" id="stInput" placeholder="Search station...">
+                <button id="searchButton">Check Trains</button>
+
+                <button
+                    id="favoriteStationButton"
+                    style="display:none;">
+                    Favorite Station
+                </button>
+
+                <h2>Favorite Stations</h2>
+
+                <div id="favStations"></div>
+
+                <div id="results"></div>
+            </section>
+
+            <section id="pathSec" style="display:none;">
+                <h2>Trip Planner</h2>
+                <input list="stations" id="startInput" placeholder="Start station">
+                <input list="stations" id="endInput" placeholder="End station">
+                <button id="findButton">Check Trains</button>
+
+                <div id="tripOutput" class=trip-panel>
+                    <div class="tab-bar">
+                        <button id="routeTab" class="active-tab">Route</button>
+                        <button id="fareTab">Fare</button>
+                    </div>
+
+                    <div id="pathContent"></div>
+
+                    <div id="fareContent" class="hidden"></div>
+                </div>
+
+                <button id="saveTripButton" type="button" style="display:none;">Save Trip</button>
+
+                <h2>Saved Trips</h2>
+                <div id="savedTrips"></div>
+            </section>
+    </div>
+
+    <datalist id="stations"></datalist>
+    
+    <script src="{{ url_for('static', filename='metroGraph.js') }}"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
