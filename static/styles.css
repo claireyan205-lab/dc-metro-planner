@@ -165,3 +165,57 @@
     margin-top: 8px;
     margin-right: 8px;
 }
+
+.arrival-card {
+    padding: 16px 0;
+    margin-bottom: 24px;
+    border-bottom: 1px solid #ccc;
+    padding: 20px 0;
+}
+
+.arrival-heading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.arrival-heading h3 {
+    margin: 0;
+}
+
+.arrival-card p {
+    margin: 8px 0 0 28px;
+}
+
+.line-circle {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+    border: 1px solid black;
+}
+
+.line-RD {
+    background-color: #e51636;
+}
+
+.line-OR {
+    background-color: #f7941d;
+}
+
+.line-YL {
+    background-color: #ffd200;
+}
+
+.line-GR {
+    background-color: #00a94f;
+}
+
+.line-BL {
+    background-color: #0076a8;
+}
+
+.line-SV {
+    background-color: #a2a4a1;
+}

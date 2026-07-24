@@ -18,10 +18,35 @@ app.secret_key = os.environ.get(
     "temporary-development-key"
 )
 
+wmata_session = requests.Session()
+wmata_session.headers.update({
+    "api_key": WMATA_API_KEY
+})
+
 def get_database():
     connection = sqlite3.connect("database.db")
     connection.row_factory = sqlite3.Row
     return connection
+
+def call_wmata(url):
+    if not WMATA_API_KEY:
+        return None, "WMATA API key is missing."
+    
+    try:
+        response = requests.get(
+            url,
+            headers={
+                "api_key": WMATA_API_KEY
+            },
+            timeout=10
+        )
+    
+        response.raise_for_status()
+        return response.json(), None
+
+    except requests.RequestException as error:
+        print("WMATA request failed:", error)
+        return None, "Could not retrieve data from WMATA."
 
 @app.route("/")
 def home():
@@ -261,11 +286,10 @@ def delete_saved_trip(trip_id):
 
 @app.route("/favorite-station", methods=["POST"])
 def favorite_station():
-
     if "user_id" not in session:
         return jsonify({
             "message":"Please log in first."
-        }),401
+        }), 401
 
     data = request.get_json()
 
@@ -306,13 +330,14 @@ def favorite_station():
 
 @app.route("/favorite-stations")
 def favorite_stations():
-
     if "user_id" not in session:
-        return jsonify([])
+        return jsonify({
+            "message": "Please log in."
+        }), 401
 
-    connection=get_database()
+    connection = get_database()
 
-    stations=connection.execute("""
+    stations = connection.execute("""
         SELECT *
         FROM favorite_stations
         WHERE user_id=?
@@ -334,7 +359,6 @@ def favorite_stations():
 
 @app.route("/favorite-stations/<int:station_id>", methods=["DELETE"])
 def delete_favorite_station(station_id):
-
     if "user_id" not in session:
         return jsonify({
             "message": "Please log in first."
@@ -362,48 +386,40 @@ def delete_favorite_station(station_id):
         "message": "Favorite station deleted."
     }), 200
 
-@app.route("/arrivals/<station>")
-def arrivals(station):
-
-    url = f"https://api.wmata.com/StationPrediction.svc/json/GetPrediction/{station}"
-
-    response = requests.get(
-        url,
-        headers={
-            "api_key": WMATA_API_KEY
-        }
+@app.route("/arrivals/<station_code>")
+def get_arrivals(station_code):
+    url = (
+        "https://api.wmata.com/"
+        "StationPrediction.svc/json/GetPrediction/"
+        f"{station_code}"
     )
 
+    response = wmata_session.get(url, timeout=8)
+    response.raise_for_status()
+    
     return jsonify(response.json())
 
 @app.route("/stations")
-def stations():
-
+def get_stations():
     url = "https://api.wmata.com/Rail.svc/json/jStations"
 
-    response = requests.get(
-        url,
-        headers={
-            "api_key": WMATA_API_KEY
-        }
-    )
+    response = wmata_session.get(url, timeout=8)
+    response.raise_for_status()
 
     return jsonify(response.json())
 
-@app.route("/fare/<start>/<end>")
-def fare(start, end):
+@app.route("/fare/<start_code>/<end_code>")
+def fare(start_code, end_code):
 
     url = (
         "https://api.wmata.com/Rail.svc/json/"
-        f"jSrcStationToDstStationInfo?FromStationCode={start}&ToStationCode={end}"
+        "jSrcStationToDstStationInfo"
+        f"?FromStationCode={start_code}"
+        f"&ToStationCode={end_code}"
     )
 
-    response = requests.get(
-        url,
-        headers={
-            "api_key": WMATA_API_KEY
-        }
-    )
+    response = wmata_session.get(url, timeout=8)
+    response.raise_for_status()
 
     return jsonify(response.json())
 

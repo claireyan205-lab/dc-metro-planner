@@ -54,9 +54,10 @@ endInput.onclick = function () {
 };
 
 async function getTrains() {
-    const station = getStationCode(stInput);
-    
-    if (station === null) {
+    const station = stInput.dataset.codes || getStationCode(stInput);
+
+    if (!station) {
+        results.innerHTML = "Please choose a valid station.";
         return;
     }
 
@@ -66,58 +67,86 @@ async function getTrains() {
 
     results.innerHTML = "Loading...";
 
-    const url = `https://api.wmata.com/StationPrediction.svc/json/GetPrediction/${station}`;
+    try {
+        const response = await fetch(`/arrivals/${station}`);
 
-    const response = await fetch(`/arrivals/${station}`);
-
-    const data = await response.json();
-
-    results.innerHTML = "";
-
-    if (data.Trains.length === 0) {
-        results.innerHTML = "No trains available for this line";
-        return;
-    }
-
-    const lines = {};
-
-    data.Trains.forEach(train => {
-        if (!lines[train.Line]) {
-            lines[train.Line] = [];
+        if (!response.ok) {
+            results.innerHTML = "Could not load train arrivals.";
+            return;
         }
 
-        lines[train.Line].push(train);
-    });
+        const data = await response.json();
 
-    for (const line in lines) {
-        const section = document.createElement("div");
+        results.innerHTML = "";
 
-        section.innerHTML = `<h2>${line} Line</h2>`;
+        if (data.Trains.length === 0) {
+            results.innerHTML = "No trains available for this line";
+            return;
+        }
 
-        lines[line].forEach(train => {
-            const info = document.createElement("div");
+        const destinations = {};
 
-            info.innerHTML = `
-            <h3>${train.DestinationName}</h3>
-            <p>Arrives in: ${train.Min} min</p>`;
+        data.Trains.forEach(train => {
+            const key = `${train.DestinationName}-${train.Line}`;
 
-            section.appendChild(info)
+            if (!destinations[key]) {
+                destinations[key] = {
+                    name: train.DestinationName,
+                    line: train.Line,
+                    times: []
+                };
+            }
+            destinations[key].times.push(train.Min);   
         });
 
-        results.appendChild(section);
+        for (const key in destinations) {
+            const destination = destinations[key];
+            
+            const section = document.createElement("div");
+            section.className = "arrival-card";
+
+            const times = destination.times
+                .map(time => {
+                    if (time === "ARR") return "Arriving";
+                    if (time === "BRD") return "Boarding";
+                    return `${time} min`;
+                })
+                .join(", ");
+
+            section.innerHTML = `
+                <div class="arrival-heading">
+                    <span class="line-circle line-${destination.line}"></span>
+                    <h3>${destination.name}</h3>
+                </div>
+
+                <p>${times}</p>
+            `;
+
+            results.appendChild(section);
+        }
+    } catch (error) {
+        console.error(error);
+        results.innerHTML = "Could not connect to the server.";
     }
 
     console.log("getTrains ran at", new Date().toLocaleTimeString());
 }
 
 async function loadStations() {
-    const url = `https://api.wmata.com/Rail.svc/json/jStations`;
-
     const response = await fetch("/stations");
+
+    if (!response.ok) {
+        console.error("Could not load stations");
+        return;
+    }
 
     const data = await response.json();
 
     stations = data.Stations;
+
+    console.log("Stations loaded:", stations.length);
+
+    stList.innerHTML = "";
 
     stations.forEach(station => {
         const option = document.createElement("option");
@@ -151,13 +180,19 @@ function getSingleCode(inp) {
 }
 
 async function getFare(startCode, endCode) {
-    const url = `https://api.wmata.com/Rail.svc/json/jSrcStationToDstStationInfo?FromStationCode=${startCode}&ToStationCode=${endCode}`;
+    try {
+        const response = await fetch(`/fare/${startCode}/${endCode}`);
 
-    const response = await fetch(`/fare/${startCode}/${endCode}`);
+        if (!response.ok) {
+            console.error("Fare request failed:", response.status);
+            return null;
+        }
 
-    const data = await response.json();
-
-    return data;
+        return await response.json();
+    } catch(error) {
+        console.error("Could not load fare:", error);
+        return null;
+    }
 }
 
 function highlightPath(route) {
@@ -594,13 +629,32 @@ async function saveFavoriteStation() {
 
 favoriteStationButton.onclick = saveFavoriteStation;
 
-async function loadFavoriteStations(){
+async function loadFavoriteStations() {
 
     const response = await fetch("/favorite-stations");
+
+    if (response.status === 401) {
+        favStations.innerHTML = `
+            <p>
+                <a href="/login-page">Log in</a> to save and view your favorite stations.
+            </p>
+        `;
+        return;
+    }
+
+    if (!response.ok) {
+        favStations.innerHTML = "<p>Could not load favorite stations.</p>";
+        return;
+    }
 
     const stations = await response.json();
 
     favStations.innerHTML = "";
+
+    if (stations.length === 0) {
+        favStations.innerHTML = "<p>No favorite stations yet.</p>";
+        return;
+    }
 
     stations.forEach(station=>{
 
@@ -662,3 +716,10 @@ async function loadFavoriteStations(){
 stInput.addEventListener("input", () => {
     favoriteStationButton.style.display = "none";
 });
+
+async function initializeApp() {
+    await loadStations();
+    await loadCurrUser();
+}
+
+initializeApp();
