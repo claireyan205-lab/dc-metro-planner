@@ -4,6 +4,7 @@ import os
 import requests
 import sqlite3
 import bcrypt
+from init_db import initialize_database
 
 load_dotenv()
 
@@ -17,6 +18,8 @@ app.secret_key = os.environ.get(
     "SECRET_KEY",
     "temporary-development-key"
 )
+
+initialize_database()
 
 wmata_session = requests.Session()
 wmata_session.headers.update({
